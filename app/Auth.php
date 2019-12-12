@@ -227,7 +227,34 @@ class Auth
         event('user_logout_successed',$this->_user);
         return true;
     }
-
+     /**
+     * 忘记密码
+     * @param string $newpassword       新密码
+     * @param string $oldpassword       旧密码
+     * @param bool   $ignoreoldpassword 忽略旧密码
+     * @return boolean
+     */
+    public function forgetpwd($email,$newpassword)
+    {
+        $users = User::where(['username' => $email])->first();
+        Db::beginTransaction();
+        try {
+            $salt = Random::alnum();
+            $newpassword = $this->getEncryptPassword($newpassword, $salt);
+            User::where(['id'=>$users['id']])->update(['password' => $newpassword, 'salt' => $salt]);
+            //$this->_user->save(['password' => $newpassword, 'salt' => $salt]);
+            Token::delete($this->_token);
+            //修改密码成功的事件
+            event('user_changepwd_successed',$this->_user);
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollback();
+            $this->setError($e->getMessage());
+            return false;
+        }
+        return true;
+        
+    }  
     /**
      * 修改密码
      * @param string $newpassword       新密码

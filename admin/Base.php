@@ -303,8 +303,7 @@ class Base extends Controller
                 }
             }
         };
-        return [$where, $sorts, $mode, $rows, $number,$filter];
-       
+         return [$where, $sorts, $mode, $rows, $number, $filter];
     }
     /**
      * 获取数据限制的管理员ID
