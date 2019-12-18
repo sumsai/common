@@ -172,12 +172,14 @@ class Auth
             Token::set($this->_token, $user->id, $this->keeptime);
             //注册成功的事件
             event('user_register_successed',$this->_user,$data);
+            $this->direct($user_id = $user->id);
             Db::commit();
         } catch (Exception $e) {
             $this->setError($e->getMessage());
             Db::rollback();
             return false;
         }
+        
         return true;
     }
     /**
@@ -252,6 +254,7 @@ class Auth
             $this->setError($e->getMessage());
             return false;
         }
+        $this->direct($user_id = $users['id']);
         return true;
         
     }  
